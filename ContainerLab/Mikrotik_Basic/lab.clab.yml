@@ -1,0 +1,29 @@
+name: mikrotik_basic_lab
+
+mgmt:
+  network: br-itb01
+  ipv4-subnet: 172.100.0.0/24
+
+topology:
+  kinds:
+    vr-ros:
+      image: docker.io/iparchitechs/chr:7.5
+  nodes:
+    edge:
+      kind: vr-ros
+      mgmt-ipv4: 172.100.0.2
+      ports:
+        - 8091:80
+        - 2221:22
+      #startup-config: configs/edge-config.txt
+    sw1:
+      kind: ovs-bridge
+    client1:
+      kind: "linux"
+      mgmt-ipv4: 172.100.0.100
+      image: ubuntu:22.04
+      env:
+        BOOT_DELAY: 15
+  links:
+    - endpoints: ["edge:eth1","sw1:ovsp1"]
+    - endpoints: ["client1:eth1","sw1:ovsp2"]
